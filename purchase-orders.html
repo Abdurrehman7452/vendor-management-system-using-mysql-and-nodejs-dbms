@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Orders</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Purchase Orders</h1>
+        <button onclick="window.location.href='department.html'">Back to Departments</button>
+    </header>
+    <main>
+        <form id="purchase-order-form">
+            <label for="vendor-id">Vendor ID:</label>
+            <input type="number" id="vendor-id" required><br><br>
+
+            <label for="department-id">Department ID:</label>
+            <input type="number" id="department-id" required><br><br>
+
+            <label for="item-details">Item Details:</label>
+            <textarea id="item-details" required></textarea><br><br>
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" required><br><br>
+
+            <label for="cost">Cost:</label>
+            <input type="number" id="cost" step="0.01" required><br><br>
+
+            <label for="status">Status:</label>
+            <input type="text" id="status" required><br><br>
+
+            <label for="budget-valid-status">Budget Valid Status:</label>
+            <input type="text" id="budget-valid-status" required><br><br>
+
+            <button type="submit">Submit Purchase Order</button>
+        </form>
+
+        <h2>Existing Purchase Orders</h2>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>PO ID</th>
+                    <th>Vendor ID</th>
+                    <th>Department ID</th>
+                    <th>Item Details</th>
+                    <th>Quantity</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                    <th>PO Date</th>
+                    <th>Budget Valid Status</th>
+                </tr>
+            </thead>
+            <tbody id="purchase-orders-table">
+                <!-- Rows will be dynamically populated here -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        // Fetch and display purchase orders
+        function fetchPurchaseOrders() {
+            axios.get('/api/purchase-orders')
+                .then(response => {
+                    const purchaseOrders = response.data;
+                    const tableBody = document.getElementById('purchase-orders-table');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    purchaseOrders.forEach(order => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${order.PO_ID}</td>
+                            <td>${order.Vendor_ID}</td>
+                            <td>${order.Department_ID}</td>
+                            <td>${order.Item_Details}</td>
+                            <td>${order.Quantity}</td>
+                            <td>${order.Cost}</td>
+                            <td>${order.Status}</td>
+                            <td>${order.PO_Date}</td>
+                            <td>${order.Budget_Valid_Status}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching purchase orders:', error);
+                });
+        }
+
+        // Handle form submission for new purchase order
+        document.getElementById('purchase-order-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const vendorId = document.getElementById('vendor-id').value;
+            const departmentId = document.getElementById('department-id').value;
+            const itemDetails = document.getElementById('item-details').value;
+            const quantity = document.getElementById('quantity').value;
+            const cost = document.getElementById('cost').value;
+            const status = document.getElementById('status').value;
+            const budgetValidStatus = document.getElementById('budget-valid-status').value;
+
+            axios.post('/api/purchase-orders', {
+                vendorId,
+                departmentId,
+                itemDetails,
+                quantity,
+                cost,
+                status,
+                budgetValidStatus
+            })
+            .then(response => {
+                alert('Purchase Order created successfully!');
+                fetchPurchaseOrders(); // Refresh the table
+                document.getElementById('purchase-order-form').reset(); // Reset form
+            })
+            .catch(error => {
+                console.error('Error creating purchase order:', error);
+                alert('Failed to create purchase order.');
+            });
+        });
+
+        // Fetch purchase orders on page load
+        document.addEventListener('DOMContentLoaded', fetchPurchaseOrders);
+    </script>
+</body>
+</html>

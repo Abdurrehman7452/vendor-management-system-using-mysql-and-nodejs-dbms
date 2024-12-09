@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: url('bg.jpeg') no-repeat center center fixed;
+        background-size: cover;
+        color: #333;
+    }
+    
+    h1, h2 {
+        text-align: center;
+        color: #444;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.8); /* Slightly transparent white background */
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    label {
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+    
+    input, textarea, button, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    button {
+        background-color: #28a745; /* Light green tone */
+        color: #fff;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    button:hover {
+        background-color: #218838;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    button.back-btn {
+        background: none;
+        color: #007BFF;
+        border: none;
+        font-size: 16px;
+        text-decoration: underline;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+    
+    button.back-btn:hover {
+        text-decoration: none;
+        color: #0056b3;
+    }
+    </style>
+</head>
+<body>
+    <button onclick="history.back()">&#x3c;</button>
+    <h1>Signup</h1>
+    <form action="/signup" method="POST">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <!-- Hidden role input field -->
+        <input type="hidden" name="role" value="">
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
+
+        <button type="submit">Signup</button>
+    </form>
+
+</body>
+</html>

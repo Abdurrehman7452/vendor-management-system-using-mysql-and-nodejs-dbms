@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 5em;
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .section h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .button {
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin: 10px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .back-button {
+            font-size: 1.5em;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .contracts-options {
+            display: none;
+            text-align: center;
+        }
+
+        .contracts-options button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            margin: 10px;
+        }
+
+        .contract-form {
+            display: none;
+            text-align: center;
+        }
+
+        .contract-form input, .contract-form select {
+            padding: 10px;
+            margin: 10px;
+            font-size: 1.1em;
+            width: 50%;
+        }
+
+        .contract-list {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .contract-list table {
+            width: 80%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="history.back()">&#x3c; Back</button>
+
+        <h1 id="vendorName">Loading...</h1>
+
+        <div class="section">
+            <button class="button" onclick="window.location.href='purchase-orders.html'">Purchase Orders</button>
+        </div>
+
+        <div class="section">
+            <button class="button" onclick="showContractOptions()">Contracts</button>
+        </div>
+
+        <div class="contracts-options" id="contractsOptions">
+            <h2>Select Contract Type</h2>
+            <button class="button" onclick="showNewContractForm()">New Contract</button>
+            <button class="button" onclick="showExistingContracts()">Existing Contracts</button>
+        </div>
+
+ <!-- New Contract Form -->
+<div class="contract-form" id="newContractForm">
+    <h2>New Contract</h2>
+    <form id="contractForm">
+        <label for="departmentId">Department ID</label>
+        <input type="text" id="departmentId" required> <!-- Added departmentId -->
+
+        <br>
+
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" required>
+
+        <br>
+
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" required>
+
+        <br>
+
+        <label for="termsAndConditions">Terms and Conditions</label>
+        <textarea id="termsAndConditions" required></textarea>
+
+        <br>
+
+        <label for="status">Status</label>
+        <select id="status" required>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+
+        <br>
+
+        <label for="renewalDate">Renewal Date</label>
+        <input type="date" id="renewalDate">
+
+        <br>
+
+        <button type="submit" class="button">Save Contract</button>
+    </form>
+</div>
+
+
+
+<!-- Existing Contracts Section -->
+<div class="section">
+    <div id="contractsSection" style="display: none;">
+        <h2>Existing Contracts</h2>
+        <table id="contractsTable">
+            <thead>
+                <tr>
+                    <th>Contract ID</th>
+                    <th>Department ID</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Terms and Conditions</th>
+                    <th>Status</th>
+                    <th>Renewal Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+        <div class="section">
+            <button class="button" id="performanceButton">My Performance</button>
+        </div>
+
+        <!-- Table for performance data -->
+        <div id="performanceTable" style="display: none;">
+            <h2>Performance Data</h2>
+            <table id="performanceDataTable">
+                <thead>
+                    <tr>
+                        <th>Performance Rating</th>
+                        <th>Timeliness Score</th>
+                        <th>Service Quality Score</th>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const fetchVendorData = async () => {
+            const vendorId = localStorage.getItem('vendorId'); // Retrieve vendorId from localStorage
+
+            if (!vendorId) {
+                alert('No vendor logged in. Please sign in.');
+                window.location.href = 'vendor-signin.html'; // Redirect to sign-in page if vendorId doesn't exist
+                return;
+            }
+
+            try {
+                // Fetch vendor data using the vendorId
+                const response = await fetch(`http://localhost:3000/vendor-name/data?vendorId=${vendorId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vendor data');
+                }
+
+                const data = await response.json();
+                // Set the vendor name in the HTML
+                document.getElementById('vendorName').textContent = data.VendorName;
+
+            } catch (error) {
+                console.error('Error fetching vendor name:', error);
+                document.getElementById('vendorName').textContent = 'Error loading vendor name';
+            }
+        };
+
+        const fetchVendorPerformance = async () => {
+            const vendorId = localStorage.getItem('vendorId'); // Retrieve vendorId from localStorage
+
+            if (!vendorId) {
+                alert('No vendor logged in. Please sign in.');
+                window.location.href = 'vendor-signin.html'; // Redirect to sign-in page if vendorId doesn't exist
+                return;
+            }
+
+            try {
+                // Fetch vendor performance data
+                const response = await fetch(`http://localhost:3000/vendor-performance/data?vendorId=${vendorId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vendor performance data');
+                }
+
+                const data = await response.json();
+                
+                // Populate the performance table
+                const tableBody = document.getElementById('performanceDataTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = ''; // Clear any existing data
+
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = data.Performance_Rating;
+                row.insertCell(1).textContent = data.Timeliness_Score;
+                row.insertCell(2).textContent = data.Service_Quality_Score;
+                row.insertCell(3).textContent = data.Feedback;
+
+                // Show the performance table
+                document.getElementById('performanceTable').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error fetching performance data:', error);
+                alert('Error loading performance data');
+            }
+        };
+
+        // Event listener for the "My Performance" button
+        document.getElementById('performanceButton').addEventListener('click', fetchVendorPerformance);
+
+        // Initial call to fetch and display vendor data
+        fetchVendorData();
+
+        // Function to show contract options
+        function showContractOptions() {
+            document.getElementById('contractsOptions').style.display = 'block';
+        }
+
+        // Function to show new contract form
+        function showNewContractForm() {
+            document.getElementById('newContractForm').style.display = 'block';
+            document.getElementById('contractsSection').style.display = 'none';
+        }
+
+        // Function to show existing contracts
+        function showExistingContracts() {
+            document.getElementById('newContractForm').style.display = 'none';
+            document.getElementById('contractsSection').style.display = 'block';
+            fetchExistingContracts(); // Fetch and display existing contracts
+        }
+
+        document.getElementById('contractForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const vendorId = localStorage.getItem('vendorId'); // Get vendorId from localStorage
+    const departmentId = document.getElementById('departmentId').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const termsAndConditions = document.getElementById('termsAndConditions').value;
+    const status = document.getElementById('status').value;
+    const renewalDate = document.getElementById('renewalDate').value;
+
+    try {
+        await fetch('http://localhost:3000/vendor-contracts', {
+    method: 'POST', // Ensure this is POST
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        vendorId,
+        departmentId,
+        startDate,
+        endDate,
+        termsAndConditions,
+        status,
+        renewalDate,
+    }),
+});
+
+
+        // Check if the contract was saved successfully
+        if (!response.ok) {
+            throw new Error('Failed to save the contract');
+        }
+
+        // Clear the form after submission
+        document.getElementById('contractForm').reset();
+        alert('Contract saved successfully');
+        showExistingContracts(); // Refresh the contracts list
+
+    } catch (error) {
+        console.error('Error saving contract:', error);
+        alert('Error saving contract');
+    }
+});
+
+
+    // Function to fetch existing contracts and display them
+    async function fetchExistingContracts() {
+        const vendorId = localStorage.getItem('vendorId');
+        
+        if (!vendorId) {
+            alert('No vendor logged in. Please sign in.');
+            window.location.href = 'vendor-signin.html'; // Redirect to sign-in page if vendorId doesn't exist
+            return;
+        }
+        
+        try {
+            // Fetch contracts data from the server
+            const response = await fetch(`http://localhost:3000/vendor-contracts?vendorId=${vendorId}`);
+            const contracts = await response.json();
+
+            // Populate the contracts table
+            const tableBody = document.getElementById('contractsTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear previous rows
+
+            contracts.forEach(contract => {
+                const row = tableBody.insertRow();
+
+                // Insert each contract property into a new row
+                row.insertCell(0).textContent = contract.Contract_ID; // This can be hidden if not needed for display
+                row.insertCell(1).textContent = contract.Department_ID; // Can be replaced with Department Name if necessary
+                row.insertCell(2).textContent = contract.Start_Date;
+                row.insertCell(3).textContent = contract.End_Date;
+                row.insertCell(4).textContent = contract.Terms_and_Conditions;
+                row.insertCell(5).textContent = contract.Status;
+                row.insertCell(6).textContent = contract.Renewal_Date;
+            });
+
+        } catch (error) {
+            console.error('Error fetching contracts:', error);
+            alert('Error loading contracts');
+        }
+    }
+    </script>
+</body>
+</html>

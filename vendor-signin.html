@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Sign In</title>
+    <style>
+        /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f9f9f9;
+        color: #333;
+    }
+    
+    h1, h2 {
+        text-align: center;
+        color: #444;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    label {
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+    
+    input, textarea, button, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    button {
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    button:hover {
+        background-color: #0056b3;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    button.back-btn {
+        background: none;
+        color: #007BFF;
+        border: none;
+        font-size: 16px;
+        text-decoration: underline;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+    
+    button.back-btn:hover {
+        text-decoration: none;
+        color: #0056b3;
+    }
+    </style>
+</head>
+<body>
+    <button onclick="history.back()">&#x3c; Back</button>
+    <h1>Vendor Sign In</h1>
+    
+    <form id="vendorSigninForm">
+        <div>
+            <label for="vendorName">Vendor Name:</label>
+            <input type="text" id="vendorName" required>
+        </div>
+        <div>
+            <label for="vendorContact">Contact Info:</label>
+            <input type="text" id="vendorContact" required>
+        </div>
+        <button type="submit">Sign In</button>
+    </form>
+
+    <script>
+        document.getElementById('vendorSigninForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+    
+            const vendorName = document.getElementById('vendorName').value.trim();
+            const vendorContact = document.getElementById('vendorContact').value.trim();
+    
+            try {
+                const response = await fetch('/api/vendor-signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ vendorName, vendorContact }),
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('vendorId', data.vendorId); // Store vendorId locally
+                    alert('Sign-in successful');
+                    window.location.href = 'vendor.html'; // Redirect to dashboard
+                } else {
+                    const error = await response.json();
+                    alert(error.message); // Display error message
+                }
+            } catch (err) {
+                console.error('Error signing in:', err);
+                alert('Error signing in. Please try again.');
+            }
+        });
+    </script>
+    
+    
+    
+</body>
+</html>

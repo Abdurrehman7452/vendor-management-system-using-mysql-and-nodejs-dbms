@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Admin Panel</h1>
+        <h3 class="text-center">Manage Users</h3>
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="userTable">
+                <!-- Data will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fetch all users from the server
+        fetch('/api/users')
+            .then(response => response.json())
+            .then(users => {
+                const userTable = document.getElementById('userTable');
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+
+                    // Add User ID
+                    const userIdCell = document.createElement('td');
+                    userIdCell.textContent = user.User_ID;
+                    row.appendChild(userIdCell);
+
+                    // Add Username
+                    const usernameCell = document.createElement('td');
+                    usernameCell.textContent = user.UserName;
+                    row.appendChild(usernameCell);
+
+                    // Add Email
+                    const emailCell = document.createElement('td');
+                    emailCell.textContent = user.Email;
+                    row.appendChild(emailCell);
+
+                    // Add Role dropdown
+                    const roleCell = document.createElement('td');
+                    const roleDropdown = document.createElement('select');
+                    roleDropdown.classList.add('form-select');
+                    ['admin', 'department head', 'vendor manager', ''].forEach(role => {
+                        const option = document.createElement('option');
+                        option.value = role;
+                        option.textContent = role || 'Unassigned';
+                        if (role === user.Role) option.selected = true;
+                        roleDropdown.appendChild(option);
+                    });
+                    roleCell.appendChild(roleDropdown);
+                    row.appendChild(roleCell);
+
+                    // Add Update Button
+                    const actionCell = document.createElement('td');
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Update Role';
+                    updateButton.classList.add('btn', 'btn-primary');
+                    updateButton.addEventListener('click', () => {
+                        const updatedRole = roleDropdown.value;
+                        fetch(`/api/update-role/${user.User_ID}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ role: updatedRole })
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Role updated successfully');
+                            } else {
+                                alert('Failed to update role');
+                            }
+                        });
+                    });
+                    actionCell.appendChild(updateButton);
+                    row.appendChild(actionCell);
+
+                    userTable.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching users:', error));
+    </script>
+</body>
+</html>

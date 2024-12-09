@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Performance</title>
+    <style>
+        /* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f9f9f9;
+    color: #333;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #444;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input, textarea, button, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+button.back-btn {
+    background: none;
+    color: #007BFF;
+    border: none;
+    font-size: 16px;
+    text-decoration: underline;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+button.back-btn:hover {
+    text-decoration: none;
+    color: #0056b3;
+}
+    </style>
+</head>
+<body>
+    <h1 id="vendorName">Vendor Performance</h1>
+    <div class="container">
+        <form id="performanceForm">
+            <label for="timelinessScore">Timeliness Score (out of 5):</label>
+            <input type="number" id="timelinessScore" name="timelinessScore" min="0" max="5" step="0.1" required>
+
+            <label for="serviceQualityScore">Service Quality Score (out of 5):</label>
+            <input type="number" id="serviceQualityScore" name="serviceQualityScore" min="0" max="5" step="0.1" required>
+
+            <label for="feedback">Feedback:</label>
+            <textarea id="feedback" name="feedback" rows="4" required></textarea>
+
+            <label for="numberOfContracts">Number of Contracts:</label>
+            <input type="number" id="numberOfContracts" name="numberOfContracts" min="0" required>
+
+            <label for="numberOfPurchaseOrders">Number of Purchase Orders:</label>
+            <input type="number" id="numberOfPurchaseOrders" name="numberOfPurchaseOrders" min="0" required>
+
+            <h3>Calculated Performance Rating: <span id="performanceRating">N/A</span></h3>
+
+            <button type="button" onclick="calculatePerformance()">Calculate Performance</button>
+            <button type="submit">Save Performance</button>
+        </form>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const vendorId = urlParams.get('vendorId');
+
+        // Fetch vendor data
+        fetch(`/vendor-performance/data?vendorId=${vendorId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('vendorName').innerText = data.VendorName;
+                document.getElementById('timelinessScore').value = data.Timeliness_Score || 0;
+                document.getElementById('serviceQualityScore').value = data.Service_Quality_Score || 0;
+                document.getElementById('feedback').value = data.Feedback || '';
+                document.getElementById('numberOfContracts').value = data.NumberOfContracts || 0;
+                document.getElementById('numberOfPurchaseOrders').value = data.NumberOfPurchaseOrders || 0;
+                calculatePerformance(); // Initialize performance rating
+            })
+            .catch(err => console.error('Error fetching vendor data:', err));
+
+        // Calculate performance rating
+        function calculatePerformance() {
+            const timelinessScore = parseFloat(document.getElementById('timelinessScore').value) || 0;
+            const serviceQualityScore = parseFloat(document.getElementById('serviceQualityScore').value) || 0;
+            const numberOfContracts = parseInt(document.getElementById('numberOfContracts').value) || 0;
+            const numberOfPurchaseOrders = parseInt(document.getElementById('numberOfPurchaseOrders').value) || 0;
+
+            // Formula: (50% timeliness, 30% quality, 10% contracts, 10% purchase orders)
+            const performanceRating = 
+            ((timelinessScore / 5) * 5 * 0.5) +
+                ((serviceQualityScore / 5) * 5 * 0.3) +
+                (Math.min(numberOfContracts, 10) * 0.1) +
+                (Math.min(numberOfPurchaseOrders, 10) * 0.1);
+
+            document.getElementById('performanceRating').innerText = performanceRating.toFixed(2);
+        }
+
+        // Handle form submission
+        document.getElementById('performanceForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const updatedData = {
+                vendorId: vendorId,
+                timelinessScore: parseFloat(document.getElementById('timelinessScore').value),
+                serviceQualityScore: parseFloat(document.getElementById('serviceQualityScore').value),
+                feedback: document.getElementById('feedback').value,
+                numberOfContracts: parseInt(document.getElementById('numberOfContracts').value),
+                numberOfPurchaseOrders: parseInt(document.getElementById('numberOfPurchaseOrders').value),
+                performanceRating: parseFloat(document.getElementById('performanceRating').innerText)
+            };
+
+            fetch('/vendor-performance/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Performance updated successfully!');
+                    window.location.href = '/vendor-manager.html'; // Redirect back to vendor management
+                } else {
+                    alert('Failed to update performance.');
+                }
+            })
+            .catch(err => console.error('Error updating performance:', err));
+        });
+    </script>
+</body>
+</html>

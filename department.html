@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Departments</h1>
+        <button onclick="window.location.href='department-register.html'">Register Department</button>
+        <button onclick="window.location.href='purchase-orders.html'">Purchase Orders</button>
+    </header>
+    <main>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Department Name</th>
+                    <th>Budget Allocated</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="departments-table">
+                <!-- Rows will be dynamically populated here -->
+            </tbody>
+        </table>
+    </main>
+    <script>
+        // Fetch and display department data
+        function fetchDepartments() {
+            axios.get('/api/departments')
+                .then(response => {
+                    const departments = response.data;
+                    const tableBody = document.getElementById('departments-table');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    departments.forEach(department => {
+                        const row = document.createElement('tr');
+                        
+                        row.innerHTML = `
+                            <td>${department.DepartmentName}</td>
+                            <td>
+                                <input 
+                                    type="number" 
+                                    value="${department.Budget_Allocated}" 
+                                    id="budget-${department.Department_ID}" 
+                                    style="width: 100px;"
+                                />
+                            </td>
+                            <td>
+                                <button onclick="updateBudget(${department.Department_ID})">Save</button>
+                                <button onclick="navigateToBudgetAllocation(${department.Department_ID})">Budget Allocation</button>
+                            </td>
+                        `;
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching departments:', error);
+                });
+        }
+
+        // Update budget allocated for a department
+        function updateBudget(departmentId) {
+            const budgetInput = document.getElementById(`budget-${departmentId}`);
+            const newBudget = parseFloat(budgetInput.value);
+
+            if (isNaN(newBudget) || newBudget <= 0) {
+                alert('Please enter a valid budget.');
+                return;
+            }
+
+            axios.post('/api/update-department-budget', {
+                departmentId: departmentId,
+                newBudget: newBudget
+            })
+            .then(response => {
+                alert('Budget updated successfully!');
+                fetchDepartments(); // Refresh the table
+            })
+            .catch(error => {
+                console.error('Error updating budget:', error);
+                alert('Failed to update budget.');
+            });
+        }
+
+        // Navigate to the budget allocation page
+        function navigateToBudgetAllocation(departmentId) {
+            window.location.href = `budget-allocation.html?departmentId=${departmentId}`;
+        }
+
+        // Fetch departments on page load
+        document.addEventListener('DOMContentLoaded', fetchDepartments);
+    </script>
+</body>
+</html>

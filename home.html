@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Management System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-image: url('./bg.jpeg');
+            background-size: cover;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: green;
+        }
+        button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="history.back()">&#x3c;</button>
+    <h1>Vendor Management System</h1>
+    <button onclick="location.href='login.html'">Login</button>
+    <button onclick="location.href='signup.html'">Signup</button>
+    <button onclick="location.href='vendor-register.html'">Vendor Register</button>
+    
+    <h2>Are you a vendor?</h2>
+    <button onclick="location.href='vendor-signin.html'">Vendor</button>
+</body>
+</html>

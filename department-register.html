@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Department</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Register New Department</h1>
+  </header>
+  <main>
+    <form id="department-form">
+      <label for="departmentName">Department Name:</label>
+      <input type="text" id="departmentName" name="departmentName" required><br><br>
+
+      <label for="budgetAllocated">Budget Allocated:</label>
+      <input type="number" id="budgetAllocated" name="budgetAllocated" required><br><br>
+
+      <button type="submit">Register Department</button>
+    </form>
+  </main>
+
+  <script>
+    // Handle the form submission with AJAX
+    document.getElementById('department-form').addEventListener('submit', function (event) {
+      event.preventDefault();  // Prevent the default form submission
+  
+      const departmentName = document.getElementById('departmentName').value;
+      const budgetAllocated = parseFloat(document.getElementById('budgetAllocated').value);
+  
+      if (!departmentName || isNaN(budgetAllocated) || budgetAllocated <= 0) {
+        alert('Please fill out the form correctly.');
+        return;
+      }
+  
+      // Send data to the server using fetch API
+      fetch('/api/register-department', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          departmentName: departmentName,
+          budgetAllocated: budgetAllocated
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errData => {
+            throw new Error(errData.message || 'Failed to register department');
+          });
+        }
+        return response.json();  // Parse the success response
+      })
+      .then(data => {
+        alert('Department registered successfully');
+        window.location.href = '/department.html';  // Redirect to departments page after successful registration
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert(error.message || 'Failed to register department.');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Manager</title>
+    <style>
+        /* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f9f9f9;
+    color: #333;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #444;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input, textarea, button, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+button.back-btn {
+    background: none;
+    color: #007BFF;
+    border: none;
+    font-size: 16px;
+    text-decoration: underline;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+button.back-btn:hover {
+    text-decoration: none;
+    color: #0056b3;
+}
+    </style>
+</head>
+<body>
+    <h1>Vendor Management</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Vendor ID</th>
+                <th>Vendor Name</th>
+                <th>Contact Info</th>
+                <th>Compliance Certification</th>
+                <th>Performance Rating</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="vendorTableBody">
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch vendors and populate the table
+        fetch('/vendor-manager/data')
+            .then(response => response.json())
+            .then(vendors => {
+                const tableBody = document.getElementById('vendorTableBody');
+                vendors.forEach(vendor => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${vendor.Vendor_ID}</td>
+                        <td>${vendor.VendorName}</td>
+                        <td>${vendor.Contact_Info}</td>
+                        <td>
+                            <input 
+                                type="text" 
+                                value="${vendor.Compliance_Certifications}" 
+                                onchange="updateCompliance(${vendor.Vendor_ID}, this.value)"
+                            />
+                        </td>
+                        <td>${vendor.Performance_Rating.toFixed(2)}</td>
+                        <td>
+                            <button onclick="location.href='/vendor-performance.html?vendorId=${vendor.Vendor_ID}'">Performance</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(err => console.error('Error fetching vendors:', err));
+
+        // Update compliance certification
+        function updateCompliance(vendorId, newCertification) {
+            fetch(`/vendor-manager/update-compliance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ vendorId, newCertification })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Compliance certification updated successfully!');
+                    } else {
+                        alert('Failed to update compliance certification.');
+                    }
+                })
+                .catch(err => console.error('Error updating compliance certification:', err));
+        }
+    </script>
+</body>
+</html>

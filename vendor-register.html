@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Registration</title>
+    <style>
+        /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f9f9f9;
+        color: #333;
+    }
+    
+    h1, h2 {
+        text-align: center;
+        color: #444;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    label {
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+    
+    input, textarea, button, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    button {
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    button:hover {
+        background-color: #0056b3;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    button.back-btn {
+        background: none;
+        color: #007BFF;
+        border: none;
+        font-size: 16px;
+        text-decoration: underline;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+    
+    button.back-btn:hover {
+        text-decoration: none;
+        color: #0056b3;
+    }
+    </style>
+</head>
+<body>
+    <button onclick="history.back()">&#x3c;</button>
+    <h1>Vendor Registration</h1>
+    <form action="/vendor-register" method="POST">
+        <label for="vendorName">Vendor Name:</label>
+        <input type="text" id="vendorName" name="vendorName" required><br><br>
+
+        <label for="contactInfo">Contact Information:</label>
+        <input type="text" id="contactInfo" name="contactInfo" required><br><br>
+
+        <label for="serviceCategories">Service Categories:</label>
+        <input type="text" id="serviceCategories" name="serviceCategories" required><br><br>
+
+        <label for="complianceCertifications">Compliance Certifications:</label>
+        <input type="text" id="complianceCertifications" name="complianceCertifications" required><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
