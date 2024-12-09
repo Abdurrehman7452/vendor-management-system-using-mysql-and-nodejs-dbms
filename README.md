@@ -3,7 +3,10 @@ This project is a Vendor Management System developed as part of a Database Manag
 
 
 # Technologies Used
-MySQL: Relational database for storing and managing vendor information.
-Node.js: Server-side framework for backend logic and database operations.
-Express.js: For creating RESTful API endpoints.
-HTML, CSS, and Bootstrap: For designing a responsive and user-friendly frontend.
+- MySQL: Relational database for storing and managing vendor information.
+
+- Node.js: Server-side framework for backend logic and database operations.
+
+- Express.js: For creating RESTful API endpoints.
+
+- HTML, CSS, and Bootstrap: For designing a responsive and user-friendly frontend.
