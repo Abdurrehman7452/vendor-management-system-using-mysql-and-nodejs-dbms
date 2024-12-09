@@ -33,3 +33,13 @@ The system provides role-based access with distinct functionalities for:
 - Express.js: For creating RESTful API endpoints.
 
 - HTML, CSS, and Bootstrap: For designing a responsive and user-friendly frontend.
+
+The design is clean and interactive, with clear navigation options for all users.
+
+## How to Run this Project
+
+1. Make sure you have NodeJS and mySQL Workbench installed in your system.
+2. Run the PROJECT.sql script in Workbench, it will create the database.
+3. Open the Folder in vscode, open terminal and run the command "npm install".
+4. In Terminal write : "node index.js".
+5. Open the application in your browser at http://localhost:3000.
